@@ -1,0 +1,15 @@
+[package]
+name = "mnemonic-16bit"
+version = "0.1.0"
+edition = "2021"
+description = "library for converting binary data into phrases with 16 bits per word"
+license = "MIT"
+repository = "https://github.com/DavidVorick/mneonic-16bit"
+
+[dependencies]
+anyhow = "1.0"
+seed15 = "0.1"
+
+[dev-dependencies]
+rand_core = "0.5"
+userspace-rng = "1"
