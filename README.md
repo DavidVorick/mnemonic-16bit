@@ -9,7 +9,7 @@ suffix 64.
 
 ```rs
 use mnemonic_16bit::{binary_to_phrase, phrase_to_binary};
-//!
+
 fn main() {
     let my_data = [0u8; 2];
     let phrase = binary_to_phrase(&my_data); // "abbey0"
