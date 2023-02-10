@@ -22,7 +22,7 @@
 //! ```
 
 use anyhow::{bail, Context, Error, Result};
-use seed15::dictionary::{DICTIONARY, DICTIONARY_UNIQUE_PREFIX};
+use dictionary_1024::{word_at_index, index_of_word};
 
 /// binary_to_phrase will convert a binary string to a phrase.
 pub fn binary_to_phrase(data: &[u8]) -> String {
@@ -40,7 +40,7 @@ pub fn binary_to_phrase(data: &[u8]) -> String {
         word_index *= 4;
         let word_bits = data[i+1] / 64;
         word_index += word_bits as u16;
-        let word = DICTIONARY[word_index as usize];
+        let word = word_at_index(word_index as usize);
 
         // Determine the accompanying number.
         let num = data[i+1] % 64;
@@ -49,35 +49,22 @@ pub fn binary_to_phrase(data: &[u8]) -> String {
         if phrase.len() != 0 {
             phrase += " ";
         }
-        phrase += word;
+        phrase += &word;
         phrase += &format!("{}", num);
         i += 2;
     }
 
     // Parse out the final word.
     if data.len() % 2 == 1 {
-        let word = DICTIONARY[data[i] as usize];
+        let word = word_at_index(data[i] as usize);
         if phrase.len() != 0 {
             phrase += " ";
         }
-        phrase += word;
+        phrase += &word;
         phrase += "64";
     }
 
     phrase
-}
-
-/// dict_index returns the index of the word in the dictionary. An error is returned if the word is
-/// not found.
-fn dict_index(word: &str) -> Result<u16, Error> {
-    // Only the prefix matters.
-    let word = &word[..DICTIONARY_UNIQUE_PREFIX];
-    for i in 0..DICTIONARY.len() {
-        if DICTIONARY[i][..DICTIONARY_UNIQUE_PREFIX] == *word {
-            return Ok(i as u16);
-        }
-    }
-    bail!("word is not in dictionary");
 }
 
 /// phrase_to_binary is the inverse of binary_to_phrase, it will take a mnonmic-16bit phrase and
@@ -125,13 +112,13 @@ pub fn phrase_to_binary(phrase: &str) -> Result<Vec<u8>, Error> {
         // Parse the rest of the data based on whether the final digit is 64 or less.
         if numerical_suffix == "64" {
             finalized = true;
-            let word_index = dict_index(word).context(format!("invalid word {} in phrase", word))?;
+            let word_index = index_of_word(word).context(format!("invalid word {} in phrase", word))?;
             if word_index > 255 {
                 bail!("final word is invalid, needs to be among the first 255 words in the dictionary");
             }
             result.push(word_index as u8);
         } else {
-            let mut bits = dict_index(word).context(format!("invalid word {} in phrase", word))?;
+            let mut bits = index_of_word(word).context(format!("invalid word {} in phrase", word))? as u16;
             bits *= 64;
             let numerical_bits: u16 = numerical_suffix.parse().unwrap();
             if numerical_bits > 64 {

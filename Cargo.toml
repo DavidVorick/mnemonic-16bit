@@ -8,7 +8,7 @@ repository = "https://github.com/DavidVorick/mneonic-16bit"
 
 [dependencies]
 anyhow = "1.0"
-seed15 = "0.1"
+dictionary-1024 = "0.2"
 
 [dev-dependencies]
 rand_core = "0.5"
