@@ -1,6 +1,6 @@
 [package]
 name = "mnemonic-16bit"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "library for converting binary data into phrases with 16 bits per word"
 license = "MIT"
